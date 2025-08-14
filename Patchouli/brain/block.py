@@ -13,8 +13,8 @@ class Block(nn.Module):
         max_len: int
     ) -> None:
         super().__init__()
-        self.attn=GQA(d_model,n_head,n_kv_head, max_len)
-        self.ff=SwiGLU(d_model,d_ff)
+        self.attn=GQA(d_model, n_head, n_kv_head, max_len)
+        self.ff=SwiGLU(d_model, d_ff)
         self.norm1=RMSNorm(d_model)
         self.norm2=RMSNorm(d_model)
     
