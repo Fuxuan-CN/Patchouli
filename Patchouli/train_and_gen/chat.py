@@ -1,4 +1,6 @@
 import torch
+import torch.nn as nn
+from pathlib import Path
 from ..brain.model import PatchouliModel
 from ..brain.tokenizer import PatchouliTokenizer
 from ..schemas.constant import DEFAULT_SYMBOL_DICT
@@ -7,14 +9,13 @@ _DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 _TOKENIZER = PatchouliTokenizer()
 _EOS_ID = DEFAULT_SYMBOL_DICT.get("<|end|>", 65539)
 
-model = PatchouliModel().to(_DEVICE)
-model.load_state_dict(torch.load("patchouli_base.pth", map_location=_DEVICE))
-model.eval()
-
 class Session:
     """ 聊天会话 """
-    def __init__(self, system: str):
+    def __init__(self, system: str, model_path: str | Path) -> None:
         self.system = system
+        self._model = PatchouliModel().to(_DEVICE)
+        self._model.load_state_dict(torch.load("patchouli_base.pth", map_location=_DEVICE))
+        self._model.eval()
         self.history_ids = _TOKENIZER.encode(f"<|system|>{system}\n")
         self.role_ids = [0] * len(self.history_ids)
         self.past_kv = None
@@ -27,9 +28,9 @@ class Session:
         idx = torch.tensor([self.history_ids], device=_DEVICE)
         role = torch.tensor([self.role_ids], device=_DEVICE)
 
-        out, self.past_kv = model.generate(
-            idx[:, -model.max_len:],
-            role[:, -model.max_len:],
+        out, self.past_kv = self._model.generate(
+            idx[:, -self._model.max_len:],
+            role[:, -self._model.max_len:],
             max_new=max_new,
             past_key_values=self.past_kv,
             eos_id=_EOS_ID,
@@ -42,7 +43,7 @@ class Session:
 
 # ----------- 使用示例 -----------
 if __name__ == "__main__":
-    s = Session("你是帕秋莉·诺蕾姬，图书馆的魔女。")
+    s = Session("你是帕秋莉·诺蕾姬，图书馆的魔女。", Path("patchouli_base.pth"))
     while True:
         user = input("你：")
         if user == "exit":

@@ -69,7 +69,7 @@ class GQA(nn.Module):
 
         scores = torch.matmul(q, k.transpose(-2, -1)) / (self.d_k ** 0.5)
         if mask is not None:
-            scores = scores.masked_fill(mask == 0, -1e9)
+            scores = scores.masked_fill(mask == 0, torch.finfo(scores.dtype).min) # 修改此处避免溢出
         attn = torch.softmax(scores, dim=-1)
         out = torch.matmul(attn, v)
 

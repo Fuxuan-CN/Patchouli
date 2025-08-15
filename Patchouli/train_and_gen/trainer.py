@@ -43,6 +43,7 @@ class Trainer:
 
     # ---------------- 内部工具 ----------------
     def _resolve_device(self) -> str:
+        """ 自动处理合适的设备 """
         if self.cfg.device == "auto":
             return "cuda" if torch.cuda.is_available() else "cpu"
         
@@ -109,6 +110,7 @@ class Trainer:
             reserved  = torch.cuda.memory_reserved() / 1024**3
             if reserved > self.cfg.warning_cuda_mem_usage:
                 logger.warning(f"显存使用超过警报阈值设置: {reserved}GB > {self.cfg.warning_cuda_mem_usage}GB")
+                torch.cuda.empty_cache()
 
     # -------------- 主训练入口 --------------
     def start(self, continue_from: Optional[str | Path] = None) -> None:
@@ -143,7 +145,7 @@ class Trainer:
                         enabled=self.device.startswith("cuda"),
                         device_type=self.device,
                     ):
-                        _, loss = self.model(x, role, y)
+                        logits, new_past, loss = self.model(x, role, y)
 
                     scaler.scale(loss).backward()
                     scaler.unscale_(optimizer)
