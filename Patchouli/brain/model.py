@@ -9,16 +9,18 @@ from .mask import get_causal_mask
 class PatchouliModel(nn.Module):
     def __init__(
         self,
-        vocab=65536 + 256,
-        d_model=2048,
-        n_layer=24,
-        n_head=32,
-        n_kv_head=8,
-        d_ff=8192,
-        max_len=8192,
+        vocab: int     = 65536 + 256,
+        d_model: int   = 2048,
+        n_layer: int   = 24,
+        n_head: int    = 32,
+        n_kv_head: int = 8,
+        d_ff: int      = 8192,
+        max_len: int   = 8192,
+        role_num: int  = 3
     ):
+        """ 帕秋莉主要角色扮演模型 """
         super().__init__()
-        self.embed = RoleEmbedding(vocab, d_model)
+        self.embed = RoleEmbedding(vocab, d_model, role_num)
         self.blocks = nn.ModuleList([
             Block(d_model, n_head, n_kv_head, d_ff, max_len) for _ in range(n_layer)
         ])
