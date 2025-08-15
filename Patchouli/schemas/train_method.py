@@ -28,8 +28,10 @@ class TrainMethod:
     """ 是否打乱 """
     loader_num_workers: int = attr.ib(0)
     """ 数据加载器线程数 """
+    save_model_training: bool = attr.ib(False)
+    """ 是否训练途中保存模型 """
     save_every: int = attr.ib(100)
-    """ 多少轮保存一次 """
+    """ 多少轮保存一次, 如果 save_model_training为False, 则不用管 """
     val_every: int = attr.ib(2)
     """ 多少轮验证一次 """
     warning_cuda_mem_usage: float = attr.ib(10)
@@ -50,6 +52,7 @@ DEFAULT = TrainMethod(
     export_model_path=Path("patchouli_base.pth"),
     loader_shuffle=True,
     loader_num_workers=0,
+    save_model_training=False,
     save_every=100,
     val_every=10,
     warning_cuda_mem_usage=11,

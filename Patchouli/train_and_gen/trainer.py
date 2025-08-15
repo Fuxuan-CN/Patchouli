@@ -162,7 +162,8 @@ class Trainer:
                 self._validate(epoch)
                 # ✅ 每 save_every 个 epoch 保存一次
                 if (epoch + 1) % self.cfg.save_every == 0 or epoch == self.cfg.epoch - 1:
-                    self._save_model_epoch(epoch, optimizer, scaler)
+                    if self.cfg.save_model_training: # 如果设定了训练要保存模型，则会保存
+                        self._save_model_epoch(epoch, optimizer, scaler)
 
                 if (epoch + 1) % self.cfg.sys_health_check_every == 0 or epoch == self.cfg.sys_health_check_every - 1:
                     self._monitor_system_health()
