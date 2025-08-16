@@ -38,6 +38,8 @@ class TrainMethod:
     """ 显存警报阈值 """
     sys_health_check_every: int = attr.ib(2)
     """ 每多少次训练后, 检查一次系统健康 """
+    gradient_accumulation_steps: int = attr.ib(1)
+    """ 梯度累积步数，显存不足时调大 """
     interrupt_save: bool = attr.ib(False)
     """ 终止按下的时候是否保存模型 """
 
@@ -57,6 +59,7 @@ DEFAULT = TrainMethod(
     val_every=10,
     warning_cuda_mem_usage=11,
     sys_health_check_every=2,
+    gradient_accumulation_steps=1,
     interrupt_save=False
 )
 """ 预设训练方案 """

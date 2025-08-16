@@ -1,5 +1,6 @@
 
-torch+cu121
+torch
 loguru
 attr
 attrs
+pyfiglet
