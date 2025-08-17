@@ -145,6 +145,7 @@ class Trainer:
         """ 训练 """
         
         if self.optimizer is None:
+            logger.debug("没有传入优化器，使用默认优化器 ")
             self.optimizer = torch.optim.AdamW(
                 self.model.parameters(),
                 lr=self.cfg.learning_rate,
@@ -152,6 +153,7 @@ class Trainer:
             )
 
         if self.scaler is None:
+            logger.debug("没有传入打标器，使用默认打标器 ")
             self.scaler = torch.GradScaler(enabled=self.use_cuda)
 
         _continue = continue_from if isinstance(continue_from, (Path, type(None))) else Path(continue_from)

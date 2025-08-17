@@ -14,6 +14,8 @@ class TrainMethod:
     """ 训练轮次 """
     batch_size: int = attr.ib(16)
     """ 一批次多少数据 """
+    gradient_accumulation_steps: int = attr.ib(1)
+    """ 梯度累积步数，显存不足时调大 """
     learning_rate: float = attr.ib(3e-4)
     """ 学习率 """
     block: int = attr.ib(1024)
@@ -38,15 +40,14 @@ class TrainMethod:
     """ 显存警报阈值 """
     sys_health_check_every: int = attr.ib(2)
     """ 每多少次训练后, 检查一次系统健康 """
-    gradient_accumulation_steps: int = attr.ib(1)
-    """ 梯度累积步数，显存不足时调大 """
     interrupt_save: bool = attr.ib(False)
     """ 终止按下的时候是否保存模型 """
 
 DEFAULT = TrainMethod(
     device="cuda",
     epoch=5,
-    batch_size=2,           # RTX 2060 12G 建议别开太大
+    batch_size=1,           # RTX 2060 12G 建议别开太大
+    gradient_accumulation_steps=4,   # RTX 2060 的情况下调高这个可以降低显卡内存占用
     learning_rate=3e-4,
     block=1024,
     dataset_path=TRAIN_DATA_PATH,
@@ -59,7 +60,6 @@ DEFAULT = TrainMethod(
     val_every=10,
     warning_cuda_mem_usage=11,
     sys_health_check_every=2,
-    gradient_accumulation_steps=1,
     interrupt_save=False
 )
 """ 预设训练方案 """
